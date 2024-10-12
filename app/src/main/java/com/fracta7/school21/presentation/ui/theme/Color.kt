@@ -1,4 +1,4 @@
-package com.fracta7.school21.ui.theme
+package com.fracta7.school21.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
