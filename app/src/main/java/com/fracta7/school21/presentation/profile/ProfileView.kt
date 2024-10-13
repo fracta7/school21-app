@@ -57,7 +57,9 @@ fun ProfileView(login: String) {
     }
   }
   Column(
-    modifier = Modifier.fillMaxSize()
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally
   ) {
     AnimatedVisibility(viewModel.state.profile != null) {
       LazyColumn(
