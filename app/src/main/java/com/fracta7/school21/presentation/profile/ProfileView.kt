@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,8 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.fracta7.school21.R
 import com.fracta7.school21.domain.model.participant.Profile
+import com.fracta7.school21.domain.model.school.participant.Badge
 import com.fracta7.school21.domain.model.school.participant.Workstation
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -148,6 +151,20 @@ fun ProfileView(login: String) {
             }
           }
         }
+        item{
+          PeerSection(title = "Badges") {
+            Row(
+              modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+                .fillMaxWidth()
+                .padding(4.dp)
+            ) {
+              viewModel.state.profile!!.badges.forEach {
+                PeerBadge(it)
+              }
+            }
+          }
+        }
       }
     }
     AnimatedVisibility(viewModel.state.profile == null) {
@@ -171,6 +188,20 @@ fun PeerSection(title: String, content: @Composable () -> Unit){
       )
       content()
     }
+  }
+}
+
+@Composable
+fun PeerBadge(badge: Badge){
+  Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+    AsyncImage(
+      model = "https://edu.21-school.ru/services/storage/download/${badge.iconUrl}",
+      placeholder = painterResource(R.drawable.badge_24),
+      contentDescription = "Badge icon",
+      error = painterResource(R.drawable.badge_24),
+      modifier = Modifier.size(96.dp).padding(12.dp)
+    )
+    Text(text = badge.name, modifier = Modifier.padding(12.dp).basicMarquee(iterations = 1000), softWrap = false, maxLines = 1)
   }
 }
 
