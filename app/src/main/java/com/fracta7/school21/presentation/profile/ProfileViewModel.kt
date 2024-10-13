@@ -4,11 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.fracta7.school21.domain.model.school.participant.ExperienceRange
 import com.fracta7.school21.domain.repository.AppRepository
 import com.fracta7.school21.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,8 +38,8 @@ class ProfileViewModel @Inject constructor(
     state = state.copy(xpPercent = percentage)
   }
 
-  suspend fun getWorkstation(participantLogin: String) {
-    getWorkstation().collect { result ->
+  suspend fun getWorkstation(login: String) {
+    repository.getWorkstation(login).collect { result ->
       state = when (result) {
         is Resource.Success -> {
           state.copy(workstation = result.data, present = true, presentLoading = false)

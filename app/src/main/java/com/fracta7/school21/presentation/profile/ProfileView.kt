@@ -1,6 +1,9 @@
 package com.fracta7.school21.presentation.profile
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,13 +40,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.fracta7.school21.R
 import com.fracta7.school21.domain.model.participant.Profile
 import com.fracta7.school21.domain.model.school.participant.Workstation
-import com.fracta7.school21.util.Resource
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 @Composable
 fun ProfileView(login: String) {
@@ -72,8 +70,17 @@ fun ProfileView(login: String) {
               .padding(4.dp),
             shape = cardShape
           ) {
+            val customEasing = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)
+            val animatedProgress by animateFloatAsState(
+              targetValue = viewModel.state.xpPercent,
+              animationSpec = tween(
+                durationMillis = 1000,
+                easing = customEasing
+              ),
+              label = "linear progress bar"
+            )
             viewModel.getLevelInfo()
-            PeerProfileInfo(viewModel.state.profile!!, viewModel.state.xpPercent)
+            PeerProfileInfo(viewModel.state.profile!!, animatedProgress)
           }
         }
         item {
@@ -285,29 +292,4 @@ fun PointChip(label: String, color: Color){
     colors = AssistChipDefaults.assistChipColors(containerColor = color),
     modifier = Modifier.padding(2.dp)
   )
-}
-
-fun getWorkstation(): Flow<Resource<Workstation>> = flow {
-  val clusterNames = listOf("registan", "sherdor", "tillakori", "ulugbek")
-  while (true) {
-    // Randomly determine whether to emit success or error
-    val isOnline = Random.nextBoolean()
-
-    if (isOnline) {
-      // Generate random workstation data
-      val workstation = Workstation(
-        clusterId = Random.nextInt(1000), // Random clusterId
-        clusterName = clusterNames.random(), // Random clusterName from the list
-        number = Random.nextInt(1, 6), // Random number between 1 and 5
-        row = ('a'..'z').random().toString() // Random row (a single letter)
-      )
-      emit(Resource.Success(workstation))
-    } else {
-      // Emit error if the workstation is offline
-      emit(Resource.Error("Workstation not present"))
-    }
-
-    // Wait for a random period between emissions (simulating asynchronous updates)
-    delay(Random.nextLong(2000, 5000))
-  }
 }
